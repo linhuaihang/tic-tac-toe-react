@@ -8,21 +8,18 @@ function Square({ value, clickSquare }) {
   );
 }
 
-function Board() {
-  const [squareValues, setSquareValues] = useState(Array(9).fill(null));
-  const [nextIsX, setNextIsX] = useState(true);
+function Board({nextIsX, currentHistory, handlePlay}) {
   function handleClick(i) {
-    if (squareValues[i] !== null || calculateWinner(setSquareValues)) return;
-    const currentSquares = squareValues.slice();
+    if (currentHistory[i] || calculateWinner(currentHistory)) return;
+    const currentSquares = currentHistory.slice();
     if (nextIsX) {
       currentSquares[i] = "X";
     } else {
       currentSquares[i] = "O";
     }
-    setSquareValues(currentSquares);
-    setNextIsX(!nextIsX);
+    handlePlay(currentSquares)
   }
-  const winner = calculateWinner(squareValues);
+  const winner = calculateWinner(currentHistory);
   let status = "";
   if (winner) {
     status = winner + "方获胜";
@@ -33,19 +30,19 @@ function Board() {
     <>
       <h1>{status}</h1>
       <div className="board-row">
-        <Square value={squareValues[0]} clickSquare={() => handleClick(0)} />
-        <Square value={squareValues[1]} clickSquare={() => handleClick(1)} />
-        <Square value={squareValues[2]} clickSquare={() => handleClick(2)} />
+        <Square value={currentHistory[0]} clickSquare={() => handleClick(0)} />
+        <Square value={currentHistory[1]} clickSquare={() => handleClick(1)} />
+        <Square value={currentHistory[2]} clickSquare={() => handleClick(2)} />
       </div>
       <div className="board-row">
-        <Square value={squareValues[3]} clickSquare={() => handleClick(3)} />
-        <Square value={squareValues[4]} clickSquare={() => handleClick(4)} />
-        <Square value={squareValues[5]} clickSquare={() => handleClick(5)} />
+        <Square value={currentHistory[3]} clickSquare={() => handleClick(3)} />
+        <Square value={currentHistory[4]} clickSquare={() => handleClick(4)} />
+        <Square value={currentHistory[5]} clickSquare={() => handleClick(5)} />
       </div>
       <div className="board-row">
-        <Square value={squareValues[6]} clickSquare={() => handleClick(6)} />
-        <Square value={squareValues[7]} clickSquare={() => handleClick(7)} />
-        <Square value={squareValues[8]} clickSquare={() => handleClick(8)} />
+        <Square value={currentHistory[6]} clickSquare={() => handleClick(6)} />
+        <Square value={currentHistory[7]} clickSquare={() => handleClick(7)} />
+        <Square value={currentHistory[8]} clickSquare={() => handleClick(8)} />
       </div>
     </>
   );
@@ -75,4 +72,20 @@ function calculateWinner(squareValues) {
   return null;
 }
 
-export default Board;
+function Game(){
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [nextIsX, setNextIsX] = useState(true);
+  const currentHistory = history[history.length - 1]
+  function handlePlay(currentSquares) {
+    setHistory([...history, currentSquares])
+    setNextIsX(!nextIsX)
+    console.log(currentSquares)
+  }
+  return (
+  <>
+    <div>
+      <Board nextIsX={nextIsX} currentHistory={currentHistory} handlePlay={handlePlay} />
+    </div>
+  </>)
+}
+export default Game;
